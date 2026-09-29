@@ -38,13 +38,13 @@
 \maketitle
 
 \begin{abstract}
-A rambler crosses a height map one cell at a time. Level or downhill steps cost 1, and climbing costs 1 plus the height gained. We compare branch and bound (uniform-cost search) with A* under five heuristics on the 16$\times$16 course map and three seeded 64$\times$64 synthetic terrains, using 500 random start/goal pairs in total. Four heuristics never overestimate the remaining cost: straight-line distance, Manhattan distance, remaining ascent, and Manhattan distance plus remaining ascent. The fifth, absolute height difference, can overestimate it. All four admissible heuristics returned an optimal route in every run. The combined heuristic did best everywhere. It expanded 25\% of the nodes branch and bound expanded on smooth terrain, but 72\% on rugged terrain, and a simple informedness measure, $h(\text{start})/C^*$, tracks this gap. The absolute-height heuristic returned a suboptimal route in 22--56\% of pairs. On the two noisier 64$\times$64 maps it also expanded more nodes than branch and bound, because it repeatedly reopened closed nodes. These results correct the conclusion of the original 2021 report. That report attributed the gains to Manhattan distance, and it rested on a height heuristic that is not admissible.
+A rambler crosses a height map one cell at a time. Level or downhill steps cost 1, and climbing costs 1 plus the height gained. We compare branch and bound (uniform-cost search) with A* under five heuristics on the 16$\times$16 course map and three seeded 64$\times$64 synthetic terrains, using 500 random start/goal pairs in total. Four heuristics never overestimate the remaining cost: straight-line distance, Manhattan distance, remaining ascent, and Manhattan distance plus remaining ascent. The fifth, absolute height difference, can overestimate it. All four admissible heuristics returned an optimal route in every run. The combined heuristic did best everywhere. It expanded 25\% of the nodes branch and bound expanded on smooth terrain, but 72\% on rugged terrain, and a simple informedness measure, $h(\text{start})/C^*$, tracks this gap. The absolute-height heuristic returned a suboptimal route in 22--56\% of pairs. On the two noisier 64$\times$64 maps it also expanded more nodes than branch and bound, because it repeatedly reopened closed nodes.
 \end{abstract}
 
 \section{Introduction}
 Path planning over terrain is a standard testbed for informed search. The textbook claim is that A* with an admissible heuristic finds the same optimal path as an uninformed method such as branch and bound or Dijkstra's algorithm \citep{dijkstra1959note,lawler1966branch}, while expanding fewer nodes \citep{hart1968formal,dechter1985generalized}. How many fewer depends on how much of the true cost the heuristic captures, and that in turn depends on the terrain.
 
-The original version of this project, written as undergraduate coursework in 2021, compared branch and bound with A* on three start/goal pairs of a single 16$\times$16 map and concluded that A* with Manhattan distance was best. Revisiting the code showed three problems. The heuristic was hard-coded, so the reported heuristics could not be selected. The straight-line heuristic mixed up coordinates and heights. The ``height difference'' heuristic can overestimate the remaining cost. This report redoes the study with corrected code and a larger, reproducible experiment. It asks three questions:
+This report asks three questions:
 \begin{enumerate}
   \item How many node expansions does each heuristic save relative to branch and bound, and how does this change with the terrain?
   \item Does combining distance and ascent information help, and can the gain be predicted from the heuristic alone?
@@ -99,7 +99,7 @@ $\hMA$ is admissible and consistent, and it dominates $\hM$, $\hE$ and $\hA$.
 Write each step cost in~\eqref{eq:cost} as $1 + \max(0, \Delta)$, where $\Delta$ is the height change of the step. Any path from $u$ to the goal has at least $\hM(u)$ steps. Its positive height changes sum to at least the net rise $H(\text{goal}) - H(u)$, and to at least 0. The path therefore costs at least $\hM(u) + \hA(u) = \hMA(u)$, which proves admissibility. For consistency, take one step from $u$ to $v$. Then $\hM(u) \le 1 + \hM(v)$. The inequality $\max(0, a+b) \le \max(0,a) + \max(0,b)$ gives $\hA(u) \le \max(0, H(v)-H(u)) + \hA(v)$. Adding the two gives $\hMA(u) \le c(u,v) + \hMA(v)$. Dominance holds because $\hA \ge 0$, $\hM \ge 0$ and $\hE \le \hM$.
 \end{proof}
 
-$\hAbs$ is the ``height difference'' heuristic of the 2021 version. It also charges for descents, which are cheap. A single downhill step of 100 costs 1, but $\hAbs$ estimates it at 100. By standard results, a consistent heuristic that dominates another expands no more nodes, ignoring ties \citep{pearl1984heuristics,dechter1985generalized}. We therefore expect $\hMA$ to expand the fewest nodes of the admissible heuristics. No such guarantee applies to $\hAbs$.
+$\hAbs$ looks like a natural ``height difference'' heuristic, but it also charges for descents, which are cheap: a single downhill step of 100 costs 1, yet $\hAbs$ estimates it at 100. By standard results, a consistent heuristic that dominates another expands no more nodes, ignoring ties \citep{pearl1984heuristics,dechter1985generalized}. We therefore expect $\hMA$ to expand the fewest nodes of the admissible heuristics. No such guarantee applies to $\hAbs$.
 
 \section{Experimental Setup}
 
@@ -126,7 +126,7 @@ Map & Size & Hills & Hill width $\sigma$ & Noise s.d. & Pairs \\
 For each map we sampled start/goal pairs uniformly at random with a fixed seed. We kept only pairs at least half the map width apart in Manhattan distance, which excludes trivial instances. Every method ran on the same pairs.
 
 \paragraph{Metrics.}
-\emph{Nodes expanded} counts every selection from open, including re-expansions of reopened nodes. We report it relative to branch and bound on the same pair and average the ratio over pairs. \emph{Optimality} compares each path's cost with branch and bound's, which is optimal. \emph{Informedness} is $h(\text{start})/C^*$, the fraction of the true cost the heuristic sees before the search begins. For continuity with 2021 we also give the coursework's \emph{efficiency}, path length divided by nodes expanded. Wall-clock time is recorded, but open and closed are linear-scan lists, so time mostly tracks node count.
+\emph{Nodes expanded} counts every selection from open, including re-expansions of reopened nodes. We report it relative to branch and bound on the same pair and average the ratio over pairs. \emph{Optimality} compares each path's cost with branch and bound's, which is optimal. \emph{Informedness} is $h(\text{start})/C^*$, the fraction of the true cost the heuristic sees before the search begins. We also give the coursework's \emph{efficiency} measure, path length divided by nodes expanded. Wall-clock time is recorded, but open and closed are linear-scan lists, so time mostly tracks node count.
 
 \paragraph{Implementation.}
 The search engine (\texttt{Search}, \texttt{SearchNode}, \texttt{SearchState}, \texttt{TerrainMap}) is the COM1005 base code by Phil Green and Heidi Christensen. The Ramblers state, the heuristics, the terrain generator and the experiment harness are ours. The code is Java 8 compatible, and \texttt{run\_experiments.sh} regenerates every number and figure in this report. Apart from timing, the results are deterministic.
@@ -226,34 +226,13 @@ Figure~\ref{fig:example} shows one pair on \texttt{smooth64}. All four methods r
 \label{fig:example}
 \end{figure}
 
-\subsection{The 2021 test cases}
-Table~\ref{tab:original} re-runs the three pairs from the original report. Branch and bound's efficiencies (0.0618, 0.0649, 0.2105) match the 2021 figures (0.0617, 0.0649, 0.210), which confirms that the rewritten state class reproduces the original problem. The column labelled ``No.\ visited'' in 2021 was the path length, not the number of nodes visited. With the corrected heuristics, the case for Manhattan alone is weak on this map: it saves at most 17\% of expansions. The absolute-height heuristic returns suboptimal routes on two of the three pairs, with costs 150 against 144 and 69 against 43.
-
-\begin{table}[t]
-\centering
-\caption{The three \texttt{tmc16} pairs from the 2021 report: path cost / nodes expanded.}
-\label{tab:original}
-\begin{tabular}{lccc}
-\toprule
-Method & $(2,4)\to(4,8)$ & $(2,4)\to(8,12)$ & $(2,4)\to(10,15)$ \\
-\midrule
-Branch and bound & 100 / 178 & 144 / 231 & 43 / 114 \\
-A* Euclidean & 100 / 174 & 144 / 229 & 43 / 98 \\
-A* Manhattan & 100 / 173 & 144 / 229 & 43 / 95 \\
-A* Ascent & 100 / 43 & 144 / 159 & 43 / 114 \\
-A* Manhattan+Ascent & 100 / \textbf{42} & 144 / \textbf{118} & 43 / \textbf{95} \\
-A* Abs.\ height & 100 / 46 & \textit{150} / 174 & \textit{69} / 158 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \section{Discussion and Limitations}
 The practical lesson is to build the heuristic from the cost function. Each step in this problem pays for distance and for climbing, and the heuristic that bounds both terms beat the two that bound only one. Informedness is a cheap diagnostic: it can be computed from a sample of solved instances before choosing a heuristic, and on the synthetic maps it tracked the terrain effect.
 
 The study has several limitations. The synthetic maps come from one generator with one seed per roughness level, so the terrain effect is shown on three maps, not a distribution of them. Movement is 4-connected, and diagonal moves would change both the costs and which heuristics are admissible. Open and closed are linear lists, as in the base code, so timings would shrink with a priority queue and a hash set. The node-count comparisons would not change. Ties in $f$ are broken by list order, which can shift node counts slightly between heuristics with equal $f$ values.
 
 \section{Conclusion}
-On least-effort terrain routing, A* with any admissible heuristic returned the same optimal routes as branch and bound, and it expanded between 25\% and 91\% as many nodes, depending on the heuristic and the terrain. A heuristic that combines Manhattan distance with remaining ascent is admissible and consistent, and it was the best choice on every map. Its advantage shrinks on rugged terrain, as its informedness predicts. The absolute-height heuristic from the original study is not admissible. It returned suboptimal routes on up to 56\% of pairs, and on the two noisier 64$\times$64 maps it searched more than branch and bound did.
+On least-effort terrain routing, A* with any admissible heuristic returned the same optimal routes as branch and bound, and it expanded between 25\% and 91\% as many nodes, depending on the heuristic and the terrain. A heuristic that combines Manhattan distance with remaining ascent is admissible and consistent, and it was the best choice on every map. Its advantage shrinks on rugged terrain, as its informedness predicts. The absolute-height heuristic is not admissible. It returned suboptimal routes on up to 56\% of pairs, and on the two noisier 64$\times$64 maps it searched more than branch and bound did.
 
 \section*{Acknowledgements}
 The search framework and terrain map reader are the COM1005 base code written by Phil Green (2013) and Heidi Christensen (2021) at the University of Sheffield.

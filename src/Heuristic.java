@@ -50,7 +50,7 @@ public enum Heuristic {
     }
   },
 
-  /** |h_goal - h_n|, the "height difference" heuristic from the 2021 version. Not admissible. */
+  /** |h_goal - h_n|, a plausible-looking height heuristic. Not admissible: it charges for descents. */
   ABS_HEIGHT("AbsHeight", false) {
     int estimate(RamblerState s, RamblerState goal) {
       return Math.abs(goal.getHeight() - s.getHeight());

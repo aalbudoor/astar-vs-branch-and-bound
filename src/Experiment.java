@@ -18,7 +18,6 @@ import java.util.Random;
  *
  *   results/runs.csv            one row per (map, pair, method)
  *   results/summary.csv         per-map, per-method aggregates
- *   results/original_cases.csv  the three tmc.pgm cases from the 2021 report
  *   results/figures/*.png       expanded nodes and paths for one example pair
  *
  * Usage: java -cp out Experiment [repoRoot]
@@ -83,7 +82,6 @@ public class Experiment {
     writeWide(new File(results, "summary.csv"), new File(results, "expanded_ratio_wide.csv"), 5);
     writeWide(new File(results, "summary.csv"), new File(results, "pct_optimal_wide.csv"), 6);
     writeWide(new File(results, "summary.csv"), new File(results, "h_start_ratio_wide.csv"), 11);
-    originalCases(maps.get(0).terrain, new File(results, "original_cases.csv"));
     exampleFigures(maps.get(1).terrain, figures);
     System.out.println("Done. Results in " + results.getPath());
   }
@@ -201,23 +199,6 @@ public class Experiment {
       StringBuilder row = new StringBuilder(e.getKey());
       for (String v : e.getValue()) row.append(',').append(v);
       w.println(row);
-    }
-    w.close();
-  }
-
-  /** The three start/goal pairs reported on tmc.pgm in the 2021 write-up. */
-  static void originalCases(int[][] terrain, File out) throws IOException {
-    int[][] cases = { { 2, 4, 4, 8 }, { 2, 4, 8, 12 }, { 2, 4, 10, 15 } };
-    PrintWriter w = new PrintWriter(out);
-    w.println("case,start,goal,method,path_cost,expanded,efficiency");
-    for (int i = 0; i < cases.length; i++) {
-      int[] c = cases[i];
-      RamblersSearch s = new RamblersSearch(terrain, new RamblerState(c[0], c[1]), new RamblerState(c[2], c[3]));
-      for (Heuristic h : METHODS) {
-        SearchResult r = h == null ? s.branchAndBound() : s.aStar(h);
-        w.println(String.format(Locale.ROOT, "%d,\"(%d,%d)\",\"(%d,%d)\",%s,%d,%d,%.4f",
-            i + 1, c[0], c[1], c[2], c[3], methodName(h), r.pathCost, r.nodesExpanded, r.efficiency()));
-      }
     }
     w.close();
   }

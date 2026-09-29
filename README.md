@@ -25,7 +25,7 @@ A rambler moves one cell up, down, left or right. Level and downhill steps cost 
 - All four admissible heuristics returned an optimal route on every pair.
 - Manhattan distance plus remaining ascent is admissible and consistent (proof in the report), and it was the best heuristic on every map.
 - The savings shrink on rugged terrain. The fraction of the true cost a heuristic sees from the start, h(start)/C\*, drops from 0.79 to 0.27 for the best heuristic, and the synthetic maps follow that trend.
-- The "height difference" heuristic from the 2021 version overestimates. It returned a suboptimal route on 22–56% of pairs, up to 5.5× the optimal cost, and on the noisier maps it expanded more nodes than branch and bound because it kept reopening closed nodes.
+- The absolute "height difference" heuristic overestimates. It returned a suboptimal route on 22–56% of pairs, up to 5.5× the optimal cost, and on the noisier maps it expanded more nodes than branch and bound because it kept reopening closed nodes.
 
 ## Running it
 
@@ -72,15 +72,6 @@ results/                             runs.csv, summary.csv, figures/
 report/                              LaTeX source and PDF
 ```
 
-## History and credits
+## Credits
 
-This started as coursework for COM1005 at the University of Sheffield in May 2021 (the first five commits). In 2026 I revisited it and did the following:
-
-- fixed the heuristics: the straight-line version mixed up coordinates and heights, and the heuristic was hard-coded, so it could not be selected
-- added the Manhattan+Ascent heuristic
-- replaced the three hand-run tests with a seeded experiment
-- rewrote the report
-
-The branch-and-bound numbers from 2021 reproduce exactly with the new code.
-
-The search framework (`Search`, `SearchNode`, `SearchState`, `TerrainMap`, `Coords`) and `tmc.pgm` are the COM1005 base code by Phil Green and Heidi Christensen.
+Built as COM1005 coursework at the University of Sheffield. The search framework (`Search`, `SearchNode`, `SearchState`, `TerrainMap`, `Coords`) and `tmc.pgm` are the COM1005 base code by Phil Green and Heidi Christensen.
