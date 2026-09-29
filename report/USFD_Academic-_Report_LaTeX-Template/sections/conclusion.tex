@@ -1,6 +1,6 @@
 \chapter{Conclusions}
 \label{ch:conclusion}
 
-On least-effort terrain routing, A* with any admissible heuristic returned the same optimal routes as branch and bound, and it expanded between 25\% and 91\% as many nodes, depending on the heuristic and the terrain. A heuristic that combines Manhattan distance with remaining ascent is admissible and consistent, and it was the best choice on every map. Its advantage shrinks on rugged terrain, as its informedness predicts. The absolute-height heuristic from the original study is not admissible. It returned suboptimal routes on up to 56\% of pairs, and on the two noisier 64$\times$64 maps it searched more than branch and bound did.
+On least-effort terrain routing, A* with any admissible heuristic returned the same optimal routes as branch and bound, and it expanded between 25\% and 91\% as many nodes, depending on the heuristic and the terrain. A heuristic that combines Manhattan distance with remaining ascent is admissible and consistent, and it was the best choice on every map. Its advantage shrinks on rugged terrain, as its informedness predicts. The absolute-height heuristic is not admissible. It returned suboptimal routes on up to 56\% of pairs, and on the two noisier 64$\times$64 maps it searched more than branch and bound did.
 
 Natural extensions are 8-connected movement, more terrain samples per roughness level, and a priority-queue implementation so that timing comparisons become meaningful alongside node counts.

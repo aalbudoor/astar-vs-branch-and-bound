@@ -100,26 +100,3 @@ Figure~\ref{fig:example} shows one pair on \texttt{smooth64}. All four methods r
 \caption{Start (green, top right) to goal (yellow, bottom left) on \texttt{smooth64}; lighter cells are higher. Blue cells were expanded and the red line is the route found. All four routes cost 95.}
 \label{fig:example}
 \end{figure}
-
-
-\section{The Original Test Cases}
-
-Table~\ref{tab:original} re-runs the three pairs from the original report. Branch and bound's efficiencies (0.0618, 0.0649, 0.2105) match the original figures (0.0617, 0.0649, 0.210), which confirms that the rewritten state class reproduces the original problem. The column labelled ``No.\ visited'' in the original report was the path length, not the number of nodes visited. With the corrected heuristics, the case for Manhattan alone is weak on this map: it saves at most 17\% of expansions. The absolute-height heuristic returns suboptimal routes on two of the three pairs, with costs 150 against 144 and 69 against 43.
-
-\begin{table}[ht]
-\centering
-\caption{The three \texttt{tmc16} pairs from the original report: path cost / nodes expanded.}
-\label{tab:original}
-\begin{tabular}{lccc}
-\toprule
-Method & $(2,4)\to(4,8)$ & $(2,4)\to(8,12)$ & $(2,4)\to(10,15)$ \\
-\midrule
-Branch and bound & 100 / 178 & 144 / 231 & 43 / 114 \\
-A* Euclidean & 100 / 174 & 144 / 229 & 43 / 98 \\
-A* Manhattan & 100 / 173 & 144 / 229 & 43 / 95 \\
-A* Ascent & 100 / 43 & 144 / 159 & 43 / 114 \\
-A* Manhattan+Ascent & 100 / \textbf{42} & 144 / \textbf{118} & 43 / \textbf{95} \\
-A* Abs.\ height & 100 / 46 & \textit{150} / 174 & \textit{69} / 158 \\
-\bottomrule
-\end{tabular}
-\end{table}

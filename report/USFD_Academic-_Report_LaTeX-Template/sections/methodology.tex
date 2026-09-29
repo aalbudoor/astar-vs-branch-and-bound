@@ -33,7 +33,7 @@ For each map, start/goal pairs were sampled uniformly at random with a fixed see
   \item[Nodes expanded] counts every selection from open, including re-expansions of reopened nodes. It is reported relative to branch and bound on the same pair, and the ratio is averaged over pairs.
   \item[Optimality] compares each path's cost with branch and bound's, which is optimal.
   \item[Informedness] is $h(\text{start})/C^*$, the fraction of the true cost the heuristic sees before the search begins.
-  \item[Efficiency] is the COM1005 measure, path length divided by nodes expanded, kept for continuity with the original report.
+  \item[Efficiency] is the COM1005 measure, path length divided by nodes expanded.
   \item[Time] is wall-clock time per search. Open and closed are linear-scan lists, so time mostly tracks node count, and it varies from run to run.
 \end{description}
 
