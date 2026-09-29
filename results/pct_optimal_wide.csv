@@ -1,0 +1,5 @@
+map,bb,euclidean,manhattan,ascent,manhattan_ascent,abs_height
+tmc16,100.0,100.0,100.0,100.0,100.0,71.0
+smooth64,100.0,100.0,100.0,100.0,100.0,78.0
+rolling64,100.0,100.0,100.0,100.0,100.0,44.0
+rugged64,100.0,100.0,100.0,100.0,100.0,63.0

@@ -1,0 +1,5 @@
+method,path_cost,expanded
+BranchAndBound,95,3322
+AStar-Manhattan,95,1221
+AStar-Manhattan+Ascent,95,1148
+AStar-AbsHeight,95,4662
