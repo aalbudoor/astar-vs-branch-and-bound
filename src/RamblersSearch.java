@@ -1,45 +1,33 @@
+/**
+ * RamblersSearch.java
+ *
+ * A Ramblers problem instance: a terrain map, a start and a goal. Solve it with
+ * branch and bound, or with A* under a chosen heuristic.
+ */
 public class RamblersSearch extends Search {
 
-	RamblerState init;
-	RamblerState goal;
-	SearchNode initNode;
-	SearchNode goalNode;
-	
-	public RamblersSearch()
-	{
-		TerrainMap tmap = new TerrainMap("/Users/aalbudoor/git/Ramblers/Ramblers/tmc.pgm");
-		init = new RamblerState(tmap.getTmap(),tmap.getWidth(),tmap.getDepth(),0,0);
-		goal = new RamblerState(tmap.getTmap(),tmap.getWidth(),tmap.getDepth(),tmap.getWidth()-1,tmap.getDepth()-1);
-		initNode = new SearchNode(init,0,0);
-		goalNode = new SearchNode(goal,0,0);
-		
-		
-	}
-	
-	public RamblersSearch(RamblerState init,RamblerState goal)
-	{
-		
-		this.init = init;
-		this.goal = goal;
-		initNode = new SearchNode(init,0,0);
-		goalNode = new SearchNode(goal,0,0);
-	}
-	
-	public void runSearch(String strat)
-	{
-		super.runSearch(init,strat);
-	}
+  public static final String BRANCH_AND_BOUND = "branchAndBound";
+  public static final String A_STAR = "AStar";
 
-	
-	public SearchNode getGoal()
-	{
-		return this.goalNode;
-	}
-	
-//	public static void main(String args[])
-//	{
-//		RamblersSearch search = new RamblersSearch();
-//		search.runSearch("branchAndBound");
-//	}
-//	
+  private final int[][] terrain;
+  private final RamblerState start;
+  private final RamblerState goal;
+
+  public RamblersSearch(int[][] terrain, RamblerState start, RamblerState goal) {
+    this.terrain = terrain;
+    this.start = start;
+    this.goal = goal;
+  }
+
+  /** Branch and bound: expand the open node with the lowest cost so far. */
+  public SearchResult branchAndBound() {
+    RamblerState.configure(terrain, goal, Heuristic.ZERO);
+    return runSearchQuiet(start, BRANCH_AND_BOUND);
+  }
+
+  /** A*: expand the open node with the lowest cost so far plus heuristic estimate. */
+  public SearchResult aStar(Heuristic h) {
+    RamblerState.configure(terrain, goal, h);
+    return runSearchQuiet(start, A_STAR);
+  }
 }

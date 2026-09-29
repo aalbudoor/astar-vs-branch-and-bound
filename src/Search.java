@@ -100,6 +100,46 @@ public abstract class Search {
 	}
 
 
+  /**
+  * runSearchQuiet
+  * runSearch without printout, returning the path and work done
+  * used by the experiment harness
+  * @param initState initial state
+  * @param strat - String specifying strategy
+  * @return path, path cost and number of nodes expanded
+  */
+  public SearchResult runSearchQuiet (SearchState initState, String strat) {
+
+    initNode = new SearchNode(initState,0,0);
+    initNode.setParent(null);
+    initNode.setGlobalCost(0);
+
+    open = new ArrayList<SearchNode>();
+    open.add(initNode);
+    closed = new ArrayList<SearchNode>();
+
+    ArrayList<SearchState> expandedStates = new ArrayList<SearchState>();
+
+    while (!open.isEmpty()) {
+      selectNode(strat);
+      expandedStates.add(currentNode.get_State());
+
+      if (currentNode.goalPredicate(this)) {
+        LinkedList<SearchState> path = new LinkedList<SearchState>();
+        for (SearchNode n = currentNode; n != null; n = n.getParent()) {
+          path.addFirst(n.get_State());
+        }
+        return new SearchResult(true, currentNode.getGlobalCost(), path.size(),
+            expandedStates.size(), new ArrayList<SearchState>(path), expandedStates);
+      }
+
+      expand();
+      closed.add(currentNode);
+    }
+    return SearchResult.failure(expandedStates.size(), expandedStates);
+  }
+
+
   // expand current node
   private void expand () {
 
@@ -186,12 +226,13 @@ public abstract class Search {
 
 
    //Selection Strategies
+   // compare with equals: == only works when both strings happen to be interned literals
    private void selectNode(String strat) {
-	  if (strat== "depthFirst")
+	  if (strat.equals("depthFirst"))
       depthFirst();
-    else if(strat=="breadthFirst")
+    else if(strat.equals("breadthFirst"))
         breadthFirst();
-      else if(strat=="branchAndBound")
+      else if(strat.equals("branchAndBound"))
           branchAndBound();
        else AStar();
    }
