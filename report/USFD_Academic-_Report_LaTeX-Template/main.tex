@@ -1,0 +1,130 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% USFD Academic Report Template
+% Prof. Roger K. Moore
+% University of Sheffield
+% 30 July 2018
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1.2in]{geometry}
+\usepackage[toc,page]{appendix}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{pgfplots}
+\usepackage[hidelinks]{hyperref}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{patterns}
+
+\newtheorem{proposition}{Proposition}[chapter]
+
+% Heuristic names used throughout
+\newcommand{\hM}{h_{\mathrm{M}}}
+\newcommand{\hE}{h_{\mathrm{E}}}
+\newcommand{\hA}{h_{\mathrm{A}}}
+\newcommand{\hMA}{h_{\mathrm{M+A}}}
+\newcommand{\hAbs}{h_{|\Delta|}}
+
+% Experiment outputs live in the repository's results/ folder
+\newcommand{\resultsdir}{../../results}
+
+\begin{document}
+
+\captionsetup[figure]{margin=1.5cm,font=small,labelfont={bf},name={Figure},labelsep=colon,textfont={it}}
+\captionsetup[table]{margin=1.5cm,font=small,labelfont={bf},name={Table},labelsep=colon,textfont={it}}
+\captionsetup[subfigure]{margin=0pt,textfont={it}}
+
+\frontmatter
+
+\begin{titlepage}
+
+\begin{center}
+{\LARGE University of Sheffield}\\[1.5cm]
+\linespread{1.2}\huge {\bfseries How Much Does a Heuristic Buy?}\\[0.4cm]
+\Large {\bfseries A* versus Branch and Bound for Least-Effort Walking Routes on Terrain Maps}\\[1.5cm]
+\linespread{1}
+\includegraphics[width=5cm]{images/tuoslogo.png}\\[1cm]
+{\Large Abdulla Alfalasi}\\[1cm]
+\large A report submitted for the COM1005 coursework\\[0.3cm]
+\textit{in the}\\[0.3cm]
+Department of Computer Science\\[2cm]
+May 2021
+\end{center}
+
+\end{titlepage}
+
+
+% -------------------------------------------------------------------
+% Declaration
+% -------------------------------------------------------------------
+
+\newpage
+\section*{\Large Declaration}
+
+All sentences or passages quoted in this document from other people's work have been specifically acknowledged by clear cross-referencing to author, work and page(s).  Any illustrations that are not the work of the author of this report have been used with the explicit permission of the originator and are specifically acknowledged.  I understand that failure to do this amounts to plagiarism and will be considered grounds for failure.\\[1cm]
+
+\noindent Name: Abdulla Alfalasi\\[1mm]
+\rule[1em]{25em}{0.5pt}
+
+\noindent Signature:\\[1mm]
+\rule[1em]{25em}{0.5pt}
+
+\noindent Date:\\[1mm]
+\rule[1em]{25em}{0.5pt}
+
+
+% -------------------------------------------------------------------
+% Abstract and acknowledgements
+% -------------------------------------------------------------------
+
+\input{sections/abstract.tex}
+\input{sections/acknowledgements.tex}
+
+
+% -------------------------------------------------------------------
+% Contents, list of figures, list of tables
+% -------------------------------------------------------------------
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+
+% -------------------------------------------------------------------
+% Main sections
+% -------------------------------------------------------------------
+
+\mainmatter
+
+\input{sections/introduction.tex}
+\input{sections/background.tex}
+\input{sections/methodology.tex}
+\input{sections/results.tex}
+\input{sections/discussion.tex}
+\input{sections/conclusion.tex}
+
+
+% -------------------------------------------------------------------
+% Bibliography
+% -------------------------------------------------------------------
+
+\bibliographystyle{agsm}
+\bibliography{mybibliography}
+
+
+% -------------------------------------------------------------------
+% Appendices
+% -------------------------------------------------------------------
+
+\begin{appendices}
+\input{sections/appendixA.tex}
+\input{sections/appendixB.tex}
+\end{appendices}
+
+\end{document}

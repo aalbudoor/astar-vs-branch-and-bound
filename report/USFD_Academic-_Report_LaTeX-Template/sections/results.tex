@@ -1,0 +1,125 @@
+\chapter{Results}
+\label{ch:results}
+
+\section{Search Effort and Optimality}
+
+Table~\ref{tab:main} and Figure~\ref{fig:ratio} summarise the 500 pairs. All four admissible heuristics returned an optimal route on every pair of every map, as the theory predicts. Their savings differ widely.
+
+\begin{table}[ht]
+\centering
+\caption{Mean nodes expanded relative to branch and bound (lower is better) and percentage of pairs solved optimally. The last row gives the mean and maximum cost excess of the absolute-height heuristic over the optimum. Branch and bound's own mean expansions are 148, 2360, 2622 and 2797 for the four maps.}
+\label{tab:main}
+\small
+\begin{tabular}{l cc cc cc cc}
+\toprule
+& \multicolumn{2}{c}{\texttt{tmc16}} & \multicolumn{2}{c}{\texttt{smooth64}} & \multicolumn{2}{c}{\texttt{rolling64}} & \multicolumn{2}{c}{\texttt{rugged64}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+Method & ratio & opt.\,\% & ratio & opt.\,\% & ratio & opt.\,\% & ratio & opt.\,\% \\
+\midrule
+Branch and bound & 1.00 & 100 & 1.00 & 100 & 1.00 & 100 & 1.00 & 100 \\
+A* Euclidean     & 0.83 & 100 & 0.57 & 100 & 0.74 & 100 & 0.85 & 100 \\
+A* Manhattan     & 0.79 & 100 & 0.45 & 100 & 0.66 & 100 & 0.81 & 100 \\
+A* Ascent        & 0.79 & 100 & 0.82 & 100 & 0.81 & 100 & 0.91 & 100 \\
+A* Manh.+Ascent  & \textbf{0.56} & 100 & \textbf{0.25} & 100 & \textbf{0.48} & 100 & \textbf{0.72} & 100 \\
+A* Abs.\ height  & 0.76 & 71 & 0.71 & 78 & 1.11 & 44 & 1.10 & 63 \\
+\midrule
+\multicolumn{9}{l}{Cost excess of A* Abs.\ height over optimum: mean / max (\%)} \\
+& \multicolumn{2}{c}{16.9 / 455} & \multicolumn{2}{c}{2.7 / 51} & \multicolumn{2}{c}{7.5 / 126} & \multicolumn{2}{c}{1.9 / 22} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth, height=6.2cm,
+  ybar, bar width=5pt, area legend,
+  ymin=0, ymax=1.25,
+  ylabel={Nodes expanded / branch and bound},
+  symbolic x coords={tmc16,smooth64,rolling64,rugged64},
+  xtick=data,
+  x tick label style={font=\ttfamily\small},
+  enlarge x limits=0.15,
+  legend style={font=\footnotesize, at={(0.5,1.03)}, anchor=south, legend columns=3, draw=none},
+  ymajorgrids, grid style={gray!25},
+  extra y ticks={1}, extra y tick style={grid=major, grid style={black, dashed}},
+]
+\addplot[fill=gray!55, draw=gray!80] table[x=map, y=euclidean, col sep=comma] {\resultsdir/expanded_ratio_wide.csv};
+\addplot[fill=blue!45, draw=blue!70] table[x=map, y=manhattan, col sep=comma] {\resultsdir/expanded_ratio_wide.csv};
+\addplot[fill=teal!45, draw=teal!70] table[x=map, y=ascent, col sep=comma] {\resultsdir/expanded_ratio_wide.csv};
+\addplot[fill=orange!75, draw=orange!90!black] table[x=map, y=manhattan_ascent, col sep=comma] {\resultsdir/expanded_ratio_wide.csv};
+\addplot[fill=red!55, draw=red!80!black, postaction={pattern=north east lines}] table[x=map, y=abs_height, col sep=comma] {\resultsdir/expanded_ratio_wide.csv};
+\legend{Euclidean, Manhattan, Ascent, Manhattan+Ascent, Abs.\ height (inadmissible)}
+\end{axis}
+\end{tikzpicture}
+\caption{Mean nodes expanded by A* relative to branch and bound (dashed line). Manhattan+Ascent expands the fewest nodes on every map. The inadmissible absolute-height heuristic does worse than branch and bound on the two noisier 64$\times$64 maps.}
+\label{fig:ratio}
+\end{figure}
+
+Manhattan+Ascent was the best heuristic on every map. On \texttt{smooth64} it expanded a quarter of the nodes branch and bound expanded, and its mean search time fell from 22.4\,ms to 2.0\,ms in the recorded run. Distance alone mattered more than ascent alone on the synthetic maps. On the small course map the two did equally well (0.79), and adding them together gave far more than either alone. The ordering $\hMA < \hM < \hE$ in nodes expanded matches the dominance ordering of the three heuristics.
+
+
+\section{Why the Savings Shrink on Rugged Terrain}
+
+The gain from every heuristic fell as the terrain became rougher: Manhattan+Ascent went from 0.25 on \texttt{smooth64} to 0.72 on \texttt{rugged64}. Table~\ref{tab:informedness} shows why. On smooth terrain the optimal route is close to a straight walk plus the unavoidable climb, so $\hMA$ sees 79\% of the true cost from the start. On rugged terrain the optimal route pays for many small climbs and detours that no local estimate can see, and $\hMA$ sees only 27\%. Across the three synthetic maps, which share a size, lower informedness goes with a higher expansion ratio for every admissible heuristic except Ascent, whose informedness is low everywhere. Unlike the expansion ratio, informedness can be measured from a sample of solved instances without comparing search runs.
+
+\begin{table}[ht]
+\centering
+\caption{Mean informedness $h(\text{start})/C^*$ of each heuristic. Values above 1 mean the heuristic overestimates.}
+\label{tab:informedness}
+\begin{tabular}{lcccc}
+\toprule
+Heuristic & \texttt{tmc16} & \texttt{smooth64} & \texttt{rolling64} & \texttt{rugged64} \\
+\midrule
+Euclidean & 0.20 & 0.49 & 0.27 & 0.15 \\
+Manhattan & 0.27 & 0.64 & 0.35 & 0.20 \\
+Ascent & 0.24 & 0.15 & 0.13 & 0.07 \\
+Manhattan+Ascent & 0.51 & 0.79 & 0.48 & 0.27 \\
+Abs.\ height & 1.72 & 0.63 & 0.44 & 0.16 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{The Cost of an Inadmissible Heuristic}
+
+The absolute-height heuristic returned a suboptimal route on 22--56\% of pairs. The worst route on the course map cost 61 against an optimum of 11, 5.5 times as much. It was also not reliably faster. On \texttt{rolling64} and \texttt{rugged64} it expanded about 10\% \emph{more} nodes than branch and bound, and on one \texttt{rolling64} pair it expanded 20{,}047 nodes on a 4{,}096-cell map. An inconsistent heuristic can close a node by an expensive route and then find a cheaper one. The node is then reopened and expanded again, and those re-expansions add up. On the course map it has a mean informedness of 1.72, so it usually overestimates, and its apparent savings there come largely from that overestimation. It prunes aggressively by ignoring routes that are actually cheap.
+
+
+\section{Worked Example}
+
+Figure~\ref{fig:example} shows one pair on \texttt{smooth64}. All four methods returned routes of cost 95. Branch and bound expanded 3322 nodes, most of the map. Manhattan expanded 1221 and Manhattan+Ascent 1148, both confined to a corridor around the route. The absolute-height heuristic still found the optimum here but expanded 4662 nodes, more than the map contains, because of re-expansions.
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}{0.48\linewidth}\centering\includegraphics[width=0.8\linewidth]{\resultsdir/figures/example_BranchAndBound.png}\caption{Branch and bound: 3322 expanded}\end{subfigure}\hfill
+\begin{subfigure}{0.48\linewidth}\centering\includegraphics[width=0.8\linewidth]{\resultsdir/figures/example_AStar-Manhattan.png}\caption{A* Manhattan: 1221 expanded}\end{subfigure}\\[8pt]
+\begin{subfigure}{0.48\linewidth}\centering\includegraphics[width=0.8\linewidth]{\resultsdir/figures/example_AStar-Manhattan+Ascent.png}\caption{A* Manhattan+Ascent: 1148 expanded}\end{subfigure}\hfill
+\begin{subfigure}{0.48\linewidth}\centering\includegraphics[width=0.8\linewidth]{\resultsdir/figures/example_AStar-AbsHeight.png}\caption{A* Abs.\ height: 4662 expanded}\end{subfigure}
+\caption{Start (green, top right) to goal (yellow, bottom left) on \texttt{smooth64}; lighter cells are higher. Blue cells were expanded and the red line is the route found. All four routes cost 95.}
+\label{fig:example}
+\end{figure}
+
+
+\section{The Original Test Cases}
+
+Table~\ref{tab:original} re-runs the three pairs from the original report. Branch and bound's efficiencies (0.0618, 0.0649, 0.2105) match the original figures (0.0617, 0.0649, 0.210), which confirms that the rewritten state class reproduces the original problem. The column labelled ``No.\ visited'' in the original report was the path length, not the number of nodes visited. With the corrected heuristics, the case for Manhattan alone is weak on this map: it saves at most 17\% of expansions. The absolute-height heuristic returns suboptimal routes on two of the three pairs, with costs 150 against 144 and 69 against 43.
+
+\begin{table}[ht]
+\centering
+\caption{The three \texttt{tmc16} pairs from the original report: path cost / nodes expanded.}
+\label{tab:original}
+\begin{tabular}{lccc}
+\toprule
+Method & $(2,4)\to(4,8)$ & $(2,4)\to(8,12)$ & $(2,4)\to(10,15)$ \\
+\midrule
+Branch and bound & 100 / 178 & 144 / 231 & 43 / 114 \\
+A* Euclidean & 100 / 174 & 144 / 229 & 43 / 98 \\
+A* Manhattan & 100 / 173 & 144 / 229 & 43 / 95 \\
+A* Ascent & 100 / 43 & 144 / 159 & 43 / 114 \\
+A* Manhattan+Ascent & 100 / \textbf{42} & 144 / \textbf{118} & 43 / \textbf{95} \\
+A* Abs.\ height & 100 / 46 & \textit{150} / 174 & \textit{69} / 158 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,18 @@
+\chapter{Discussion}
+\label{ch:discussion}
+
+\section{Designing the Heuristic from the Cost Function}
+
+The practical lesson is to build the heuristic from the cost function. Each step in this problem pays for distance and for climbing, and the heuristic that bounds both terms beat the two that bound only one. Informedness is a cheap diagnostic: it can be computed from a sample of solved instances before choosing a heuristic, and on the synthetic maps it tracked the terrain effect.
+
+The absolute-height heuristic shows the opposite case. It looks reasonable because height matters in this problem, but it prices descents as if they were climbs. That makes it overestimate, which costs optimality, and it makes it inconsistent, which on the larger maps cost more search than using no heuristic at all.
+
+
+\section{Limitations}
+
+\begin{itemize}
+  \item The synthetic maps come from one generator with one seed per roughness level, so the terrain effect is shown on three maps, not a distribution of them.
+  \item Movement is 4-connected. Diagonal moves would change both the costs and which heuristics are admissible.
+  \item Open and closed are linear lists, as in the base code, so timings would shrink with a priority queue and a hash set. The node-count comparisons would not change.
+  \item Ties in $f$ are broken by list order, which can shift node counts slightly between heuristics with equal $f$ values.
+\end{itemize}

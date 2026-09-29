@@ -2,7 +2,7 @@
 
 How much does a good heuristic save when planning a least-effort walking route over a height map? This repo compares branch and bound (uniform-cost search) with A* under five heuristics on the course map and three synthetic 64×64 terrains, over 500 random start/goal pairs.
 
-**Report:** [`report/report.pdf`](report/report.pdf)
+**Report:** [`report/report.pdf`](report/report.pdf) (article format) or [University of Sheffield report format](report/USFD_Academic-_Report_LaTeX-Template/main.pdf)
 
 ![Nodes expanded on the smooth map](results/figures/example_BranchAndBound.png) ![Nodes expanded with Manhattan+Ascent](results/figures/example_AStar-Manhattan+Ascent.png)
 

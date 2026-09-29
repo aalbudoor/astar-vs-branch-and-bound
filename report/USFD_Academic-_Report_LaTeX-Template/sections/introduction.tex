@@ -1,0 +1,28 @@
+\chapter{Introduction}
+
+Path planning over terrain is a standard testbed for informed search. The textbook claim is that A* with an admissible heuristic finds the same optimal path as an uninformed method such as branch and bound or Dijkstra's algorithm \citep{dijkstra1959note,lawler1966branch}, while expanding fewer nodes \citep{hart1968formal,dechter1985generalized}. How many fewer depends on how much of the true cost the heuristic captures, and that in turn depends on the terrain.
+
+The original version of this project compared branch and bound with A* on three pairs of start and goal cells on a single 16$\times$16 map and concluded that A* with Manhattan distance was best. Revisiting the code showed three problems. The heuristic was hard-coded, so the reported heuristics could not be selected. The straight-line heuristic mixed up coordinates and heights. The ``height difference'' heuristic can overestimate the remaining cost. This report redoes the study with corrected code and a larger, reproducible experiment.
+
+
+\section{Aims and Objectives}
+
+The project asks three questions:
+\begin{enumerate}
+  \item How many node expansions does each heuristic save relative to branch and bound, and how does this change with the terrain?
+  \item Does combining distance and ascent information help, and can the gain be predicted from the heuristic alone?
+  \item What does an inadmissible heuristic cost in route quality and in search effort?
+\end{enumerate}
+
+To answer them, the project:
+\begin{itemize}
+  \item implements the Ramblers problem on the COM1005 search framework, with the heuristic selectable per search;
+  \item proves which heuristics are admissible and consistent;
+  \item runs every method on the same 500 seeded start/goal pairs across four maps of increasing roughness;
+  \item re-runs the three test cases from the original report to check that the new code reproduces the old problem.
+\end{itemize}
+
+
+\section{Overview of the Report}
+
+Chapter~\ref{ch:background} defines the problem, the two search algorithms and the five heuristics, and proves that the combined heuristic is admissible and consistent. Chapter~\ref{ch:methodology} describes the maps, the choice of instances, the metrics and the implementation. Chapter~\ref{ch:results} reports search effort, optimality and informedness, and re-runs the original test cases. Chapter~\ref{ch:discussion} discusses what the results mean and where they stop, and Chapter~\ref{ch:conclusion} concludes. Appendix~\ref{app:reproduce} explains how to reproduce every number, and Appendix~\ref{app:full} gives the full per-map results.

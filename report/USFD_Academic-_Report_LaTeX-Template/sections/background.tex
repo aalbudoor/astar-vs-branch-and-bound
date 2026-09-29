@@ -1,0 +1,57 @@
+\chapter{Background}
+\label{ch:background}
+
+\section{The Ramblers Problem}
+
+A terrain map is a grid of heights $H(r,c) \in \{0,\dots,255\}$. A state is a cell $(r,c)$, and the rambler can move to any of its four neighbours. The cost of stepping from cell $u$ to a neighbouring cell $v$ is
+\begin{equation}
+  c(u,v) =
+  \begin{cases}
+    1 & \text{if } H(v) \le H(u),\\
+    1 + H(v) - H(u) & \text{if } H(v) > H(u),
+  \end{cases}
+  \label{eq:cost}
+\end{equation}
+so descending is as cheap as walking on the flat and every metre climbed is paid for. The task is to find a path of least total cost $C^*$ from a start cell to a goal cell.
+
+
+\section{Search Algorithms}
+
+Both algorithms keep an \emph{open} list of generated nodes and a \emph{closed} list of expanded nodes. A node records its state, its cost so far $g$, and its parent. When a successor reaches a state already on open or closed by a cheaper route, that node is updated and, if it was closed, moved back to open. Search stops when a goal node is \emph{selected} for expansion, not when it is generated, which is what makes the returned path optimal.
+
+\subsection{Branch and bound}
+Branch and bound \citep{lawler1966branch} always selects the open node with the lowest $g$. With the duplicate check above it is uniform-cost search, the node-selection form of Dijkstra's algorithm \citep{dijkstra1959note,russell2020aima}.
+
+\subsection{A*}
+A* selects the open node with the lowest $f = g + h$, where $h$ estimates the remaining cost to the goal \citep{hart1968formal}. With $h \equiv 0$ it reduces to branch and bound. This was checked in the code: on every instance tested, A* with $h \equiv 0$ reproduced branch and bound's path cost and node count exactly.
+
+
+\section{Heuristics}
+
+Let $(r,c)$ be the current cell and $(r_g,c_g)$ the goal. Table~\ref{tab:heuristics} lists the five heuristics compared.
+
+\begin{table}[ht]
+\centering
+\caption{Heuristics compared. ``Admissible'' means the heuristic never exceeds the true remaining cost.}
+\label{tab:heuristics}
+\begin{tabular}{llc}
+\toprule
+Name & Definition & Admissible \\
+\midrule
+Euclidean $\hE$ & $\lfloor \sqrt{(r-r_g)^2 + (c-c_g)^2} \rfloor$ & yes \\
+Manhattan $\hM$ & $|r-r_g| + |c-c_g|$ & yes \\
+Ascent $\hA$ & $\max\bigl(0,\; H(r_g,c_g) - H(r,c)\bigr)$ & yes \\
+Manhattan+Ascent $\hMA$ & $\hM + \hA$ & yes \\
+Absolute height $\hAbs$ & $|H(r_g,c_g) - H(r,c)|$ & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{proposition}
+$\hMA$ is admissible and consistent, and it dominates $\hM$, $\hE$ and $\hA$.
+\end{proposition}
+\begin{proof}
+Write each step cost in~\eqref{eq:cost} as $1 + \max(0, \Delta)$, where $\Delta$ is the height change of the step. Any path from $u$ to the goal has at least $\hM(u)$ steps. Its positive height changes sum to at least the net rise $H(\text{goal}) - H(u)$, and to at least 0. The path therefore costs at least $\hM(u) + \hA(u) = \hMA(u)$, which proves admissibility. For consistency, take one step from $u$ to $v$. Then $\hM(u) \le 1 + \hM(v)$. The inequality $\max(0, a+b) \le \max(0,a) + \max(0,b)$ gives $\hA(u) \le \max(0, H(v)-H(u)) + \hA(v)$. Adding the two gives $\hMA(u) \le c(u,v) + \hMA(v)$. Dominance holds because $\hA \ge 0$, $\hM \ge 0$ and $\hE \le \hM$.
+\end{proof}
+
+$\hAbs$ is the ``height difference'' heuristic of the original version. It also charges for descents, which are cheap. A single downhill step of 100 costs 1, but $\hAbs$ estimates it at 100. By standard results, a consistent heuristic that dominates another expands no more nodes, ignoring ties \citep{pearl1984heuristics,dechter1985generalized}. $\hMA$ is therefore expected to expand the fewest nodes of the admissible heuristics. No such guarantee applies to $\hAbs$.

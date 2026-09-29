@@ -1,0 +1,24 @@
+\chapter{Reproducing the Experiments}
+\label{app:reproduce}
+
+The code is at \url{https://github.com/aalbudoor/astar-vs-branch-and-bound}. With a JDK (version 8 or newer) installed, one command regenerates the synthetic maps, every result file and every figure:
+
+\begin{verbatim}
+./run_experiments.sh
+\end{verbatim}
+
+It compiles \texttt{src/} into \texttt{out/} and runs \texttt{Experiment}, which writes:
+\begin{description}
+  \item[\texttt{results/runs.csv}] one row per map, pair and method;
+  \item[\texttt{results/summary.csv}] per-map, per-method aggregates;
+  \item[\texttt{results/original\_cases.csv}] the three test cases from the original report;
+  \item[\texttt{results/figures/}] the images in Figure~\ref{fig:example}.
+\end{description}
+The full run takes about 20 seconds. Apart from timings, the output is identical from run to run.
+
+A single instance can be solved from the command line:
+\begin{verbatim}
+javac -d out src/*.java
+java -cp out RunRamblers maps/tmc.pgm 0 0 15 15 manhattan_ascent path.png
+\end{verbatim}
+The method is one of \texttt{bb}, \texttt{zero}, \texttt{euclidean}, \texttt{manhattan}, \texttt{ascent}, \texttt{manhattan\_ascent} or \texttt{abs\_height}.

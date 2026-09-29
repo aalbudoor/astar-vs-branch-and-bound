@@ -1,0 +1,43 @@
+\chapter{Methodology}
+\label{ch:methodology}
+
+\section{Terrain Maps}
+
+The experiments use the 16$\times$16 map \texttt{tmc.pgm} supplied with the coursework, and three 64$\times$64 maps generated as sums of Gaussian hills with per-cell Gaussian noise, rescaled to 0--255 (Table~\ref{tab:maps}). The three generated maps range from a few broad hills to many narrow, noisy ones.
+
+\begin{table}[ht]
+\centering
+\caption[Terrain maps used in the experiments]{Terrain maps. Synthetic maps are regenerated from a fixed seed by \texttt{TerrainGenerator}.}
+\label{tab:maps}
+\begin{tabular}{lccccc}
+\toprule
+Map & Size & Hills & Hill width $\sigma$ & Noise s.d. & Pairs \\
+\midrule
+\texttt{tmc16} (course map) & 16$\times$16 & --- & --- & --- & 200 \\
+\texttt{smooth64} & 64$\times$64 & 8 & 8--16 & 0 & 100 \\
+\texttt{rolling64} & 64$\times$64 & 30 & 3--8 & 4 & 100 \\
+\texttt{rugged64} & 64$\times$64 & 120 & 1.5--4 & 12 & 100 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Instances}
+
+For each map, start/goal pairs were sampled uniformly at random with a fixed seed. Only pairs at least half the map width apart in Manhattan distance were kept, which excludes trivial instances. Every method ran on the same pairs.
+
+
+\section{Metrics}
+
+\begin{description}
+  \item[Nodes expanded] counts every selection from open, including re-expansions of reopened nodes. It is reported relative to branch and bound on the same pair, and the ratio is averaged over pairs.
+  \item[Optimality] compares each path's cost with branch and bound's, which is optimal.
+  \item[Informedness] is $h(\text{start})/C^*$, the fraction of the true cost the heuristic sees before the search begins.
+  \item[Efficiency] is the COM1005 measure, path length divided by nodes expanded, kept for continuity with the original report.
+  \item[Time] is wall-clock time per search. Open and closed are linear-scan lists, so time mostly tracks node count, and it varies from run to run.
+\end{description}
+
+
+\section{Implementation}
+
+The search engine (\texttt{Search}, \texttt{SearchNode}, \texttt{SearchState}, \texttt{TerrainMap}) is the COM1005 base code by Phil Green and Heidi Christensen. The Ramblers state, the heuristics, the terrain generator and the experiment harness were written for this project. The code is Java 8 compatible, and \texttt{run\_experiments.sh} regenerates every number and figure in this report (Appendix~\ref{app:reproduce}). Apart from timing, the results are deterministic.

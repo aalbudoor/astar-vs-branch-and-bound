@@ -3,14 +3,17 @@ out/
 *.class
 
 # LaTeX build files
-report/*.aux
-report/*.log
-report/*.out
-report/*.bbl
-report/*.blg
-report/*.fls
-report/*.fdb_latexmk
-report/*.synctex.gz
+report/**/*.aux
+report/**/*.log
+report/**/*.out
+report/**/*.bbl
+report/**/*.blg
+report/**/*.fls
+report/**/*.fdb_latexmk
+report/**/*.synctex.gz
+report/**/*.toc
+report/**/*.lof
+report/**/*.lot
 
 # Editors and OS
 .DS_Store
